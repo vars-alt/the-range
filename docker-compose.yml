@@ -1,0 +1,30 @@
+# The Range — minimal, segmented lab. Localhost only; never expose these ports.
+services:
+  target:
+    build: ./services/vulnerable-ml-api
+    container_name: range-target
+    environment:
+      ACCESS_LOG: /var/log/range/access.jsonl
+    volumes:
+      - ./data/logs:/var/log/range
+    ports:
+      - "127.0.0.1:8000:8000"   # bound to loopback on purpose
+    networks:
+      range_net:
+        ipv4_address: 10.13.1.10
+
+  attacker:
+    build: ./attacks
+    container_name: range-attacker
+    depends_on: [target]
+    profiles: ["attack"]        # only starts with: docker compose --profile attack run attacker
+    networks:
+      range_net:
+        ipv4_address: 10.13.0.66
+
+networks:
+  range_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.13.0.0/16

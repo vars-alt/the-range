@@ -1,0 +1,4 @@
+# Host-side tooling for the telemetry factory (the lab services pin their own deps)
+numpy>=1.26
+scikit-learn>=1.4
+requests>=2.31
